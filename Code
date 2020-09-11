@@ -1,0 +1,44 @@
+import pandas as  pd
+import numpy as np
+import time 
+from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
+
+driver_path="C:/Users/your_sleneium_file_path"
+driver=webdriver.Chrome(executable_path=driver_path)
+liste=[]
+driver.get("yourvideoslinkonyoutube")
+driver.maximize_window()
+time.sleep(2)
+
+##Videos collect of every video link
+videos=driver.find_elements_by_xpath("/html/body/ytd-app/div/ytd-page-manager/ytd-browse/ytd-two-column-browse-results-renderer/div[1]/ytd-section-list-renderer/div[2]/ytd-item-section-renderer/div[3]/ytd-grid-renderer/div[1]/ytd-grid-video-renderer['position()>=1 and position()<=100']/div[1]/div[1]/div[1]/h3/a")
+
+time.sleep(2)
+
+##We Will click videos link and we collect comments from this videos
+for video in videos:
+    time.sleep(2)
+    video.click()
+    time.sleep(2)
+    driver.execute_script("window.scrollTo(0, window.scrollY + 400)")
+    time.sleep(1)
+
+    comments=driver.find_elements_by_id("content-text")
+    time.sleep(2)
+    for cmt in comments:
+        
+        liste.append(cmt.text)
+        
+    print(liste)
+    driver.back()
+    time.sleep(3)
+
+
+  
+##df=pd.DataFrame(liste)
+##df.to_excel("comments.xlsx")        
+
+'''
+
+'''
