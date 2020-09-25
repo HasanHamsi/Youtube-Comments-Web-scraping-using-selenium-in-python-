@@ -2,43 +2,73 @@ import pandas as  pd
 import numpy as np
 import time 
 from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
 
-driver_path="C:/Users/your_sleneium_file_path"
+from selenium.webdriver import Chrome
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
+
+driver_path="C:/Users//Selenium/chromedriver.exe"
 driver=webdriver.Chrome(executable_path=driver_path)
 liste=[]
-driver.get("yourvideoslinkonyoutube")
+videos=[]
+driver.get("give youtube videos link")
 driver.maximize_window()
-time.sleep(2)
 
+time.sleep(2)   
 ##Videos collect of every video link
-videos=driver.find_elements_by_xpath("/html/body/ytd-app/div/ytd-page-manager/ytd-browse/ytd-two-column-browse-results-renderer/div[1]/ytd-section-list-renderer/div[2]/ytd-item-section-renderer/div[3]/ytd-grid-renderer/div[1]/ytd-grid-video-renderer['position()>=1 and position()<=100']/div[1]/div[1]/div[1]/h3/a")
+
+'''
+trs = driver.find_elements_by_xpath("//tbody[@id='se-tbody-result']//tr")
+for i in trs[3:20]:
+    my_a = i.find_element_by_xpath(".//a")
+    print my_a.get_attribute('href')
+'''
+wait = WebDriverWait(driver,30)
+
+time.sleep(1)
+for item in range(50):
+    #by increasing the highest range you can get more content
+    wait.until(EC.visibility_of_element_located((By.TAG_NAME, "body"))).send_keys(Keys.END)
+    time.sleep(1)
+    
 
 time.sleep(2)
+videos=driver.find_elements_by_xpath("/html/body/ytd-app/div/ytd-page-manager/ytd-browse/ytd-two-column-browse-results-renderer/div[1]/ytd-section-list-renderer/div[2]/ytd-item-section-renderer/div[3]/ytd-grid-renderer/div[1]/ytd-grid-video-renderer['position()>=1 and position()<=1500']/div[1]/div[1]/div[1]/h3/a")
 
+#videos=driver.find_elements_by_xpath("//*[@id='video-title']")
+##videos=driver.find_elements_by_id("video-title")
+time.sleep(2)
+#print(videos)
+driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+time.sleep(3)
 ##We Will click videos link and we collect comments from this videos
-for video in videos:
-    time.sleep(2)
-    video.click()
-    time.sleep(2)
-    driver.execute_script("window.scrollTo(0, window.scrollY + 400)")
-    time.sleep(1)
+src=[]
+elems = driver.find_elements_by_xpath("/html/body/ytd-app/div/ytd-page-manager/ytd-browse/ytd-two-column-browse-results-renderer/div[1]/ytd-section-list-renderer/div[2]/ytd-item-section-renderer/div[3]/ytd-grid-renderer/div[1]/ytd-grid-video-renderer['position()>=1 and position()<=1500']/div[1]/div[1]/div[1]/h3/a")
+for i in range(len(elems)):
+        src.append(elems[i].get_attribute('href'))
+        
+print(src)   
+#driver.execute_script("document.body.style.zoom='50%'")
+for videolink in src:
+    driver.get(videolink)
+    #print(video)
 
+    time.sleep(1)
+    driver.execute_script("window.scrollTo(0, window.scrollY+700 )")
+    time.sleep(1)
     comments=driver.find_elements_by_id("content-text")
-    time.sleep(2)
     for cmt in comments:
         
         liste.append(cmt.text)
         
     print(liste)
-    driver.back()
-    time.sleep(3)
+    #driver.back()
+
+    
+df=pd.DataFrame(liste)
+df.to_excel("comment_youtube.xlsx")
+time.sleep(2)        
 
 
-  
-##df=pd.DataFrame(liste)
-##df.to_excel("comments.xlsx")        
-
-'''
-
-'''
